@@ -104,10 +104,12 @@ export async function POST(request: Request) {
 
     const primaryApiKey = process.env.OPENROUTER_API_KEY;
     const fallbackApiKey = process.env.OPENROUTER_FALLBACK_API_KEY;
+    const fallbackApiKey2 = process.env.OPENROUTER_FALLBACK_API_KEY_2;
     
     console.log('🔑 API Key Status:');
     console.log(`  Primary key: ${primaryApiKey ? '✓ configured' : '✗ missing'}`);
-    console.log(`  Fallback key: ${fallbackApiKey ? '✓ configured' : '✗ not set (add OPENROUTER_FALLBACK_API_KEY to .env.local)'}`);
+    console.log(`  Fallback key 1: ${fallbackApiKey ? '✓ configured' : '✗ not set'}`);
+    console.log(`  Fallback key 2: ${fallbackApiKey2 ? '✓ configured' : '✗ not set'}`);
     
     if (!primaryApiKey) {
         return NextResponse.json(
@@ -235,16 +237,28 @@ CRITICAL: Most resumes score 55-70. Return ONLY JSON.`
     try {
         analysis = await tryWithApiKey(primaryApiKey, 'primary');
     } catch (primaryError: any) {
-        console.warn('Primary key failed:', primaryError.message);
+        console.warn('❌ Primary key failed:', primaryError.message);
         
-        // Try fallback key if available and primary hit rate limit
-        if (fallbackApiKey && primaryError.message?.includes('RATE_LIMIT')) {
-            console.log('Switching to fallback API key...');
+        // Try fallback key 1 if available
+        if (fallbackApiKey) {
+            console.log('⚡ Switching to fallback API key 1...');
             try {
-                analysis = await tryWithApiKey(fallbackApiKey, 'fallback');
+                analysis = await tryWithApiKey(fallbackApiKey, 'fallback-1');
             } catch (fallbackError: any) {
-                console.error('Fallback key also failed:', fallbackError.message);
-                lastError = fallbackError;
+                console.warn('❌ Fallback key 1 also failed:', fallbackError.message);
+                
+                // Try fallback key 2 if available
+                if (fallbackApiKey2) {
+                    console.log('⚡ Switching to fallback API key 2...');
+                    try {
+                        analysis = await tryWithApiKey(fallbackApiKey2, 'fallback-2');
+                    } catch (fallback2Error: any) {
+                        console.error('❌ Fallback key 2 also failed:', fallback2Error.message);
+                        lastError = fallback2Error;
+                    }
+                } else {
+                    lastError = fallbackError;
+                }
             }
         } else {
             lastError = primaryError;

@@ -49,6 +49,7 @@ export default function ApplicationCard({ application, isDragging = false }: App
 
   return (
     <div
+      id={`app-${application.id}`}
       ref={setNodeRef}
       {...attributes}
       {...listeners}

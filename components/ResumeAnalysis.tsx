@@ -73,8 +73,6 @@ export default function ResumeAnalysis() {
       if (!response.ok) throw new Error(data.error || 'Analysis failed');
 
       setResult(data);
-      // Refresh history after new analysis
-      fetchResumeHistory();
     } catch (err: any) {
       setError(err.message);
     } finally {

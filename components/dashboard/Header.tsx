@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Menu, History, X, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { Menu, History, X, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 interface ResumeHistoryItem {
@@ -56,18 +56,6 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Search Bar */}
-        <div className="hidden md:block relative group">
-          <Search 
-            size={18} 
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] group-focus-within:text-[var(--green-500)] transition-colors" 
-          />
-          <input 
-            type="text" 
-            placeholder="Search applications..." 
-            className="w-[320px] bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-lg py-2.5 pl-11 pr-4 text-sm text-[var(--text-secondary)] focus:outline-none focus:border-[var(--border-green)] focus:ring-1 focus:ring-[var(--green-500)] transition-all placeholder-[var(--text-disabled)]"
-          />
-        </div>
 
         {/* History Button */}
         <div className="relative">

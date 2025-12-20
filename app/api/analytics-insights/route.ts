@@ -53,6 +53,7 @@ export async function POST(request: Request) {
 
     const primaryApiKey = process.env.OPENROUTER_API_KEY;
     const fallbackApiKey = process.env.OPENROUTER_FALLBACK_API_KEY;
+    const fallbackApiKey2 = process.env.OPENROUTER_FALLBACK_API_KEY_2;
     
     if (!primaryApiKey) {
       // Return static insights if no API key
@@ -116,16 +117,27 @@ Return ONLY valid JSON array:
       const insights = await tryWithApiKey(primaryApiKey, 'primary');
       return NextResponse.json({ insights });
     } catch (primaryError: any) {
-      console.warn('Primary key failed for analytics:', primaryError.message);
+      console.warn('❌ Primary key failed for analytics:', primaryError.message);
       
-      // Try fallback key if available and primary hit rate limit
-      if (fallbackApiKey && primaryError.message?.includes('RATE_LIMIT')) {
-        console.log('Switching to fallback API key for analytics...');
+      // Try fallback key 1 if available
+      if (fallbackApiKey) {
+        console.log('⚡ Switching to fallback API key 1 for analytics...');
         try {
-          const insights = await tryWithApiKey(fallbackApiKey, 'fallback');
+          const insights = await tryWithApiKey(fallbackApiKey, 'fallback-1');
           return NextResponse.json({ insights });
         } catch (fallbackError: any) {
-          console.error('Fallback key also failed for analytics:', fallbackError.message);
+          console.warn('❌ Fallback key 1 also failed for analytics:', fallbackError.message);
+          
+          // Try fallback key 2 if available
+          if (fallbackApiKey2) {
+            console.log('⚡ Switching to fallback API key 2 for analytics...');
+            try {
+              const insights = await tryWithApiKey(fallbackApiKey2, 'fallback-2');
+              return NextResponse.json({ insights });
+            } catch (fallback2Error: any) {
+              console.error('❌ Fallback key 2 also failed for analytics:', fallback2Error.message);
+            }
+          }
         }
       }
       

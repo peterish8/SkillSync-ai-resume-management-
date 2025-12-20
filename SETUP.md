@@ -77,8 +77,10 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-# Google Gemini AI
-GEMINI_API_KEY=your_gemini_api_key
+# OpenRouter AI (for resume analysis)
+OPENROUTER_API_KEY=your_primary_openrouter_api_key
+OPENROUTER_FALLBACK_API_KEY=your_second_openrouter_api_key       # Optional
+OPENROUTER_FALLBACK_API_KEY_2=your_third_openrouter_api_key      # Optional
 
 # App URL
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -92,10 +94,14 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 3. Copy the Project URL and anon/public key
 4. Copy the service_role key (keep this secret!)
 
-**Gemini API:**
-1. Go to [Google AI Studio](https://aistudio.google.com/)
-2. Click "Get API Key"
-3. Create a new API key
+**OpenRouter API:**
+1. Go to [openrouter.ai](https://openrouter.ai/)
+2. Sign up and create an API key
+3. Copy your API key to `OPENROUTER_API_KEY`
+4. **(Optional)** Add up to 2 more fallback keys from different accounts:
+   - `OPENROUTER_FALLBACK_API_KEY` - First fallback
+   - `OPENROUTER_FALLBACK_API_KEY_2` - Second fallback
+   - Keys automatically cascade: primary → fallback 1 → fallback 2
 
 ### 5. Run the Development Server
 ```bash
