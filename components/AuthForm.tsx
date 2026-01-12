@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Loader2, ArrowRight, User } from 'lucide-react';
+import { useGuest } from './providers/GuestContext';
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,6 +12,7 @@ export default function AuthForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { loginAsGuest } = useGuest();
   const router = useRouter();
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -243,6 +245,19 @@ export default function AuthForm() {
             )}
           </button>
         </form>
+
+        {/* Guest Mode Option */}
+        <div className="mt-6 flex flex-col items-center">
+             <button
+              type="button"
+              onClick={loginAsGuest}
+              className="group flex items-center gap-2 text-sm font-medium text-[var(--text-tertiary)] hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-[var(--bg-tertiary)]"
+            >
+              <User className="w-4 h-4" />
+              <span>Continue as Guest</span>
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+            </button>
+        </div>
 
         {/* Terms */}
         <p className="mt-8 text-xs text-[var(--text-tertiary)] text-center leading-relaxed max-w-[280px] mx-auto">

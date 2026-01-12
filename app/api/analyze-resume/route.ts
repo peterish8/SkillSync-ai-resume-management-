@@ -269,6 +269,12 @@ CRITICAL: Most resumes score 55-70. Return ONLY JSON.`
         throw new Error(`All API keys failed. Last error: ${lastError?.message || 'Unknown'}`);
     }
 
+    // If guest, skip database operations and just return result
+    if (userId === 'guest') {
+        console.log('Guest analysis - skipping DB save');
+        return NextResponse.json(analysis);
+    }
+
     // Initialize Supabase with the user's auth context
     const supabaseClient = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -3,6 +3,7 @@
 import { CheckCircle2, Circle, TrendingUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useGuest } from '@/components/providers/GuestContext';
 
 interface ResumeAnalysis {
   score: number;
@@ -15,11 +16,16 @@ export default function WelcomeSection({ userName = 'John' }: { userName?: strin
   const [loading, setLoading] = useState(true);
   const [hasApplications, setHasApplications] = useState(false);
   const [hasProgress, setHasProgress] = useState(false);
+  const { isGuest } = useGuest();
 
   useEffect(() => {
+    if (isGuest) {
+      setLoading(false);
+      return;
+    }
     fetchLatestResume();
     fetchApplicationProgress();
-  }, []);
+  }, [isGuest]);
 
   const fetchLatestResume = async () => {
     try {

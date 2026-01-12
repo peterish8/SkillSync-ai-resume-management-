@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Menu, History, X, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { Menu, History, X, ChevronDown, ChevronUp, Loader2, User, LogOut } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useGuest } from '../providers/GuestContext';
 
 interface ResumeHistoryItem {
   id: string;
@@ -13,6 +14,7 @@ interface ResumeHistoryItem {
 }
 
 export default function Header() {
+  const { isGuest, logoutGuest } = useGuest();
   const [resumeHistory, setResumeHistory] = useState<ResumeHistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>(null);
@@ -56,6 +58,20 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
+        {/* Guest Mode Toggle */}
+        {isGuest && (
+          <div className="flex items-center gap-3 px-3 py-1.5 bg-[rgba(62,207,142,0.1)] border border-[var(--green-500)]/30 rounded-full animate-pulse-slow">
+            <span className="w-2 h-2 rounded-full bg-[var(--green-500)] animate-pulse"></span>
+            <span className="text-xs font-bold text-[var(--green-500)] uppercase tracking-wider">Guest Mode</span>
+            <button
+               onClick={logoutGuest}
+               className="ml-2 p-1 hover:bg-[var(--green-500)]/20 rounded-full text-[var(--green-500)] transition-colors"
+               title="Exit Guest Mode"
+            >
+              <LogOut size={12} />
+            </button>
+          </div>
+        )}
 
         {/* History Button */}
         <div className="relative">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowUp, ArrowDown, TrendingUp, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useGuest } from '@/components/providers/GuestContext';
 
 interface DashboardStats {
   totalApps: number;
@@ -19,9 +20,14 @@ export default function StatsCards() {
     responseRate: 0
   });
   const [loading, setLoading] = useState(true);
+  const { isGuest } = useGuest();
 
   useEffect(() => {
     const fetchStats = async () => {
+      if (isGuest) {
+        setLoading(false);
+        return;
+      }
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;

@@ -5,6 +5,7 @@ import Header from '@/components/dashboard/Header';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { useGuest } from '@/components/providers/GuestContext';
 
 export default function DashboardLayout({
   children,
@@ -14,8 +15,15 @@ export default function DashboardLayout({
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
+  const { isGuest } = useGuest();
+
   useEffect(() => {
     const checkUser = async () => {
+      if (isGuest) {
+        setLoading(false);
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         router.push('/');
@@ -23,7 +31,7 @@ export default function DashboardLayout({
       setLoading(false);
     };
     checkUser();
-  }, [router]);
+  }, [router, isGuest]);
 
   if (loading) {
     return <div className="min-h-screen bg-[#0B0B0F] flex items-center justify-center text-white">Loading...</div>;

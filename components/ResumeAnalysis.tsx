@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Sparkles, CheckCircle2, Lightbulb, ArrowRight, Loader2, Download, RotateCw } from 'lucide-react';
+import { useGuest } from '@/components/providers/GuestContext';
 
 interface AnalysisResult {
   score: number;
@@ -27,8 +28,12 @@ export default function ResumeAnalysis() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const { isGuest } = useGuest();
+
   useEffect(() => {
     const checkExisting = async () => {
+      if (isGuest) return; // Guests start fresh
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
@@ -46,7 +51,7 @@ export default function ResumeAnalysis() {
       }
     };
     checkExisting();
-  }, []);
+  }, [isGuest]);
 
   const handleAnalyze = async () => {
     if (!resumeText.trim()) return;
@@ -54,18 +59,28 @@ export default function ResumeAnalysis() {
     setError(null);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not authenticated");
+      let headers = {};
+      let userId = '';
+
+      if (isGuest) {
+        userId = 'guest';
+        headers = { 'Content-Type': 'application/json' };
+      } else {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error("Not authenticated");
+        userId = session.user.id;
+        headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        };
+      }
 
       const response = await fetch('/api/analyze-resume', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
+        headers,
         body: JSON.stringify({
           resumeText,
-          userId: session.user.id
+          userId
         })
       });
 

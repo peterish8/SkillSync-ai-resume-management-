@@ -15,24 +15,42 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { useGuest } from '@/components/providers/GuestContext';
+
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const { isGuest, logoutGuest } = useGuest();
 
   useEffect(() => {
     const getUser = async () => {
+      if (isGuest) {
+        setUser({
+          email: 'guest@skillsync.ai',
+          user_metadata: {
+            full_name: 'Guest User',
+            avatar_url: null
+          }
+        });
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setUser(session.user);
       }
     };
     getUser();
-  }, []);
+  }, [isGuest]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
+    if (isGuest) {
+      logoutGuest();
+    } else {
+      await supabase.auth.signOut();
+      router.push('/');
+    }
   };
 
   const menuItems = [
