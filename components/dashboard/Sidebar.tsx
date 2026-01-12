@@ -53,7 +53,13 @@ export default function Sidebar() {
     }
   };
 
-  const menuItems = [
+  const menuItems: {
+    name: string;
+    icon: any;
+    href: string;
+    isNew?: boolean;
+    comingSoon?: boolean;
+  }[] = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
     { name: 'Applications', icon: Briefcase, href: '/dashboard/applications' },
     { name: 'Analytics', icon: BarChart2, href: '/dashboard/analytics', isNew: true },
