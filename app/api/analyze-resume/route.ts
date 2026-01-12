@@ -119,7 +119,7 @@ export async function POST(request: Request) {
     }
 
     let analysis = null;
-    let lastError = null;
+    let lastError: any = null;
 
     // Helper function to try API call with a specific key
     const tryWithApiKey = async (apiKey: string, keyType: string) => {
